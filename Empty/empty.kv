@@ -1,0 +1,114 @@
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+#:import C kivy.utils.get_color_from_hex
+
+<ScLabel@MDLabel>:
+	text_size: (self.width, None)
+	font_style: 'Caption'
+	size_hint: (1, None)
+	height: self.texture_size[1]
+	
+<Content>:
+	
+	orientation: 'vertical'
+	padding: "4dp"
+	spacing: "4dp"
+	size_hint: (1, None)
+	height: "200dp"
+	
+	BoxLayout:
+		orientation: 'vertical'
+		padding: "8dp"
+		spacing: "8dp"
+		
+		MDLabel:
+			text: "About apps"
+			font_style: "H6"
+		
+		MDLabel:
+			text: "Its only delete empty folder of phone storage. Only require storage permission to allow performing task"
+			font_style: "Caption"
+	BoxLayout:
+		orientation: 'vertical'
+		padding: "8dp"
+		spacing: "8dp"
+		
+		MDLabel:
+			text: "Author"
+			font_style: "H6"
+		
+		MDLabel:
+			text: "Saikat Acharjee Joy"#"Team of 3sTar AI LabraTory"
+			font_style: "Caption"
+			theme_text_color: 'Custom'
+			text_color: C("#FF0000")
+
+ScreenManager:
+	transition: NoTransition()
+	
+	Screen:
+		canvas.before:
+			Color:
+				rgb: 0, 0, 0
+			Rectangle:
+				pos: self.pos
+				size: self.size
+		Image:
+			source: 'com.png'
+			on_touch_up: root.current = 'main'
+			
+	Screen:
+		name: 'main'
+		BoxLayout:
+			orientation: 'vertical'
+			
+			MDToolbar:
+				title: 'Empty Folder Cleaner'
+				md_bg_color: C('#36ac3c')
+				elevation: 10
+				right_action_items: [["more", lambda x: app.show()]]
+			
+			BoxLayout:
+				orientation: 'vertical'
+				spacing: "4dp"
+				padding: "4dp"
+				
+				BoxLayout:
+					orientation: 'horizontal'
+					padding: "4dp"
+					spacing: 4
+					size_hint: (1, None)
+					
+					MDIcon:
+						icon: "folder-table-outline"
+						size_hint: (None, 1)
+						width: self.texture_size[0]
+						
+					MDLabel:
+						text: "Phone storage"
+						size_hint: (0.5, 1)
+						
+					MDRaisedButton:
+						text: '     Clean     '
+						size_hint: (.5, None)
+						on_release: app.delete()
+						pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+				
+				MDLabel:
+					text: "[b]0[/b] file clean"
+					markup: True
+					font_size: 50
+					id: countdown
+					halign: 'center'
+					text_size: (self.width, None)
+					size_hint: (1, None)
+					height: self.texture_size[1]
+					
+				MDLabel:
+					id: check
+					text_size: (self.width, None)
+					size_hint: (1, None)
+					height: self.texture_size[1]
+					
+				ScrollView:
+					ScLabel:
+						id: lbl_text
