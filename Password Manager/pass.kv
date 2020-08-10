@@ -1,0 +1,508 @@
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+#:import C kivy.utils.get_color_from_hex
+#:import SlideTransition kivy.uix.screenmanager.SlideTransition
+#:import sys sys
+#:import EventLoopBase kivy.base.EventLoopBase
+#:import Clipboard kivy.core.clipboard.Clipboard
+
+<DialogContent>:
+	
+	orientation: 'vertical'
+	padding: "4dp"
+	spacing: "4dp"
+	size_hint: (1, None)
+	height: "200dp"
+	
+	BoxLayout:
+		orientation: 'vertical'
+		padding: "8dp"
+		spacing: "8dp"
+		
+		MDLabel:
+			text: "About apps"
+			font_style: "H6"
+		
+		MDLabel:
+			text: "You can save your different types of password safely. You can save it, show it, change it, delete it."
+			font_style: "Caption"
+	BoxLayout:
+		orientation: 'vertical'
+		padding: "8dp"
+		spacing: "8dp"
+		
+		MDLabel:
+			text: "Author"
+			font_style: "H6"
+		
+		MDLabel:
+			text: "Saikat Acharjee Joy"#"Team of 3sTar AI LabraTory"
+			font_style: "Caption"
+			theme_text_color: 'Custom'
+			text_color: C("#FF0000")
+
+<NavContent>:
+	padding: "8dp"
+	spacing: "8dp"
+	orientation: 'vertical'
+	BoxLayout:
+		id: profile_box
+		size_hint: (1, 0.4)
+		orientation: 'vertical'
+		canvas.before:
+			Color:
+				rgb: (236/255, 105/255, 142/255)
+			Rectangle:
+				pos: self.pos
+				size: self.size
+				
+		MDLabel:
+			text: "Profile:"
+			halign: 'left'
+			pos_hint: {"center_x": 0.6, "center_y": 0.6}
+			size_hint: (1, None)
+			height: self.texture_size[1]
+			theme_text_color: 'Custom'
+			text_color: (1, 1, 1, 1)
+			
+		MDTextFieldRound:
+			size_hint: (0.6, None)
+			icon_left: "shield-account"
+			text: "None"
+			disabled: True
+			pos_hint: {'center_x': 0.5, "center_y": 0.5}
+			id: profile_box_text
+		MDLabel:
+			size_hint: (None, None)
+			
+	BoxLayout:
+		ScrollView:
+			MDList:
+				OneLineIconListItem:
+					text: "Home"
+					on_release:
+						root.nav_drawer.set_state('close')
+						root.screen_drawer.current = 'home'
+					IconLeftWidget:
+						icon: "home-account"
+						
+				OneLineIconListItem:
+					text: "Create an account"
+					on_release:
+						root.nav_drawer.set_state('close')
+						root.screen_drawer.current = 'create'
+					IconLeftWidget:
+						icon: "account-plus"
+										
+				OneLineIconListItem:
+					text: "Exit"
+					on_release:
+						EventLoopBase().close()
+						EventLoopBase().exit()
+						sys.exit()
+					IconLeftWidget:
+						icon: "exit-to-app"
+		
+
+ScreenManager:
+	transition: NoTransition()
+	
+	Screen:
+		name: 'greet'
+		canvas.before:
+			Color:
+				rgb: 0, 0, 0
+			Rectangle:
+				pos: self.pos
+				size: self.size
+		Image:
+			source: 'com.png'
+			
+			
+	Screen:
+		name: 'main'
+		MDToolbar:
+			title: "Password Manager"
+			pos_hint: {"top": 1}
+			elevation: 10
+			id: toolbar
+			right_action_items: [["home", lambda x: content.go_home()], ["more", lambda x: app.about_app()]]
+			left_action_items: [["menu", lambda x: nav_drawer.set_state('open')]]
+			md_bg_color: C('#d92c54')
+			
+		NavigationLayout:
+			
+			ScreenManager:
+				transition: SlideTransition()
+				id: screen_draw
+				
+				Screen:
+					name: 'home'
+					
+					MDLabel:
+						text: "Login"
+						font_style: 'H5'
+						theme_text_color: "Custom"
+						text_color: C("#FF0000")
+						halign: 'center'
+						pos_hint: {"center_x": 0.5, "center_y": 0.7}
+			
+					MDTextField:
+						hint_text: "Name"
+						id: username
+						helper_text: "Please enter name"
+						helper_text_mode: 'on_error'
+						required: True
+						pos_hint: {"center_x": 0.5, "center_y": 0.6}
+						size_hint_x: 0.8
+						icon_right: "account-arrow-left"
+					
+					MDTextField:
+						hint_text: "Password"
+						helper_text: "password lenth 6-12"
+						helper_text_mode: 'on_error'
+						required: True
+						pos_hint: {"center_x": 0.5, "center_y": 0.5}
+						size_hint_x: 0.8
+						password: True
+						id: password
+						max_text_length: 12
+						icon_right: "textbox-password"
+			
+					MDFillRoundFlatIconButton:
+						icon: "login"
+						text: "Login"
+						on_release:
+							app.name = username
+							app.password = password
+							app.reference = content.ids.profile_box_text
+							app.screen_drawer = screen_draw
+							app.check()
+							show_pass.text = "password"
+							accnt_name.text, accnt_pass.text = '', ''
+							password.text = ''
+							ch_accnt_name.text, ch_accnt_pass.text = '', ''
+							del_accnt_name = ''
+						pos_hint: {"center_x": 0.5, "center_y": 0.4}
+						
+				Screen:
+					name: 'create'
+					
+					MDLabel:
+						text: "Create New Account"
+						font_style: 'H5'
+						theme_text_color: "Custom"
+						text_color: C("#FF0000")
+						halign: 'center'
+						pos_hint: {"center_x": 0.5, "center_y": 0.7}
+					
+					MDTextField:
+						hint_text: "Name"
+						id: new_username
+						helper_text: "Please enter name"
+						helper_text_mode: 'on_error'
+						required: True
+						pos_hint: {"center_x": 0.5, "center_y": 0.6}
+						size_hint_x: 0.8
+						icon_right: "account-arrow-left"
+					
+					MDTextField:
+						hint_text: "New Password"
+						helper_text: "password lenth 6-12"
+						helper_text_mode: 'on_error'
+						required: True
+						max_text_length: 12
+						pos_hint: {"center_x": 0.5, "center_y": 0.5}
+						size_hint_x: 0.8
+						password: True
+						id: new_password
+						icon_right: "textbox-password"
+						
+					MDTextField:
+						hint_text: "Confirm Password"
+						helper_text: "password lenth 6-12"
+						helper_text_mode: 'on_error'
+						max_text_length: 12
+						required: True
+						pos_hint: {"center_x": 0.5, "center_y": 0.4}
+						size_hint_x: 0.8
+						password: True
+						id: new_confirm_password
+						icon_right: "textbox-password"
+					
+					MDFloatingActionButton:
+						icon: "arrow-right-circle-outline"
+						on_release:
+							app.name = new_username
+							app.password = new_password
+							app.flag = new_confirm_password
+							app.screen_drawer = screen_draw
+							app.create_new_account()
+							new_password.text, new_confirm_password.text = '', ''
+						pos_hint: {"center_x": 0.8, "center_y": 0.3}
+						
+				Screen:
+					name: 'view'
+					
+					BoxLayout:
+						orientation: 'vertical'
+						MDLabel:
+							text: '\nChoose Option'
+							font_style: 'H5'
+							halign: 'center'
+							theme_text_color: "Custom"
+							text_color: (1, 0, 0, 1)
+							size_hint: (1, 0.3)
+							
+						ScrollView:
+							
+							MDList:
+								
+								OneLineIconListItem:
+									text: "Show password"
+									on_release:
+										screen_draw.transition.direction = 'left'
+										screen_draw.current = 'show'
+									IconLeftWidget:
+										icon: 'eye-check'
+									
+								OneLineIconListItem:
+									text: "Set password"
+									on_release:
+										screen_draw.transition.direction = 'left'
+										screen_draw.current = 'set'
+									IconLeftWidget:
+										icon: 'notebook'
+										
+								OneLineIconListItem:
+									text: "Change password"
+									on_release:
+										screen_draw.transition.direction = 'left'
+										screen_draw.current = 'change'
+									IconLeftWidget:
+										icon: 'key-change'
+									
+								OneLineIconListItem:
+									text: "Delete password"
+									on_release:
+										screen_draw.transition.direction = 'left'
+										screen_draw.current = 'delete'
+									IconLeftWidget:
+										icon: 'delete-forever'
+										
+					MDFloatingActionButton:
+						icon: 'backburger'
+						md_bg_color: C("#d92c54")
+						elevation: 10
+						on_release:
+							screen_draw.transition.direction = 'right'
+							screen_draw.current = 'home'
+						pos_hint: {"center_x": 0.15, "center_y": 0.3}
+						
+				Screen:
+					name: 'show'
+					
+					MDLabel:
+						text: "Show Specific Password"
+						font_style: 'H5'
+						bold: True
+						theme_text_color: "Custom"
+						text_color: C("#6b2e53")
+						halign: 'center'
+						pos_hint: {"center_x": 0.5, "center_y": 0.7}
+					
+					MDTextField:
+						hint_text: "Account name"
+						helper_text: "Press enter"
+						helper_text_mode: 'on_focus'
+						required: True
+						pos_hint: {"center_x": 0.5, "center_y": 0.6}
+						size_hint_x: 0.8
+						on_text_validate:
+							app.name = username
+							app.reference = self
+							app.icon_flag = show_pass
+							app.showPass()
+						icon_right: "account-arrow-left"
+					
+					MDTextFieldRound:
+						icon_left: "key-variant"
+						text: "Password"
+						disabled: True
+						password: True
+						id: show_pass
+						normal_color: C("#aca9d9")
+						pos_hint: {"center_x": 0.4, "center_y": 0.5}
+						size_hint_x: 0.55
+						
+					MDIconButton:
+						icon: "content-copy"
+						pos_hint: {"center_x": 0.8, "center_y": 0.5}
+						on_release:
+							Clipboard.copy(show_pass.text)
+							app.show_toast()
+					
+					MDIconButton:
+						icon: "eye"
+						id: show_hide_pass
+						on_release:
+							app.flag = show_pass
+							app.icon_flag = self
+							app.show_hide()
+						pos_hint: {"center_x": 0.9, "center_y": 0.5}
+						
+					MDFloatingActionButton:
+						icon: 'backburger'
+						md_bg_color: C("#d92c54")
+						elevation: 10
+						on_release:
+							show_pass.text = "password"
+							screen_draw.transition.direction = 'right'
+							screen_draw.current = 'view'
+						pos_hint: {"center_x": 0.15, "center_y": 0.4}
+						
+						
+				Screen:
+					name: 'set'
+					
+					MDLabel:
+						text: "Add Specific Password"
+						font_style: 'H5'
+						bold: True
+						theme_text_color: "Custom"
+						text_color: C("#6b2e53")
+						halign: 'center'
+						pos_hint: {"center_x": 0.5, "center_y": 0.7}
+					
+					MDTextFieldRound:
+						icon_left: "account-arrow-right"
+						hint_text: "Account name"
+						id: accnt_name
+						pos_hint: {"center_x": 0.5, "center_y": 0.6}
+						size_hint_x: 0.8
+						color_active: C('#c9c348')
+						
+					MDTextFieldRound:
+						icon_left: "key-variant"
+						hint_text: "Password"
+						id: accnt_pass
+						pos_hint: {"center_x": 0.5, "center_y": 0.5}
+						size_hint_x: 0.8
+						password: True
+						color_active: C('#c9c348')
+						
+					MDFloatingActionButton:
+						icon: 'backburger'
+						md_bg_color: C("#d92c54")
+						elevation: 10
+						on_release:
+							accnt_name.text, accnt_pass.text = '', ''
+							screen_draw.transition.direction = 'right'
+							screen_draw.current = 'view'
+						pos_hint: {"center_x": 0.15, "center_y": 0.4}
+						
+					MDFloatingActionButton:
+						icon: 'arrow-right-circle-outline'
+						elevation: 10
+						on_release:
+							app.name = username
+							app.reference = accnt_name
+							app.password = accnt_pass
+							app.setPass()
+							accnt_name.text, accnt_pass.text = '', ''
+						pos_hint: {"center_x": 0.8, "center_y": 0.4}
+					
+				Screen:
+					name: 'change'
+					
+					MDLabel:
+						text: "Change Specific Password"
+						font_style: 'H5'
+						bold: True
+						theme_text_color: "Custom"
+						text_color: C("#6b2e53")
+						halign: 'center'
+						pos_hint: {"center_x": 0.5, "center_y": 0.7}
+					
+					MDTextFieldRound:
+						icon_left: "account-arrow-right"
+						hint_text: "Account name"
+						id: ch_accnt_name
+						pos_hint: {"center_x": 0.5, "center_y": 0.6}
+						size_hint_x: 0.8
+						color_active: C('#c9c348')
+						
+					MDTextFieldRound:
+						icon_left: "key-variant"
+						id: ch_accnt_pass
+						hint_text: "Password"
+						pos_hint: {"center_x": 0.5, "center_y": 0.5}
+						size_hint_x: 0.8
+						password: True
+						color_active: C('#c9c348')
+						
+					MDFloatingActionButton:
+						icon: 'backburger'
+						md_bg_color: C("#d92c54")
+						elevation: 10
+						on_release:
+							ch_accnt_name.text, ch_accnt_pass.text = '', ''
+							screen_draw.transition.direction = 'right'
+							screen_draw.current = 'view'
+						pos_hint: {"center_x": 0.15, "center_y": 0.4}
+						
+					MDFloatingActionButton:
+						icon: 'arrow-right-circle-outline'
+						elevation: 10
+						on_release:
+							app.name = username
+							app.reference = ch_accnt_name
+							app.password = ch_accnt_pass
+							app.changePass()
+							ch_accnt_name.text, ch_accnt_pass.text = '', ''
+						pos_hint: {"center_x": 0.8, "center_y": 0.4}
+					
+				Screen:
+					name: 'delete'
+					
+					MDLabel:
+						text: "Delete Specific Password"
+						font_style: 'H5'
+						bold: True
+						theme_text_color: "Custom"
+						text_color: C("#6b2e53")
+						halign: 'center'
+						pos_hint: {"center_x": 0.5, "center_y": 0.6}
+					
+					MDTextFieldRound:
+						icon_left: "account-arrow-right"
+						hint_text: "Account name"
+						id: del_accnt_name
+						pos_hint: {"center_x": 0.5, "center_y": 0.5}
+						size_hint_x: 0.8
+						color_active: C('#c9c348')
+						
+					MDFloatingActionButton:
+						icon: 'backburger'
+						md_bg_color: C("#d92c54")
+						elevation: 10
+						on_release:
+							del_accnt_name.text = ''
+							screen_draw.transition.direction = 'right'
+							screen_draw.current = 'view'
+						pos_hint: {"center_x": 0.15, "center_y": 0.4}
+						
+					MDFloatingActionButton:
+						icon: 'check'
+						elevation: 10
+						on_release:
+							app.name = username
+							app.reference = del_accnt_name
+							app.show_confirm()
+						pos_hint: {"center_x": 0.8, "center_y": 0.4}
+			
+			MDNavigationDrawer:
+				id: nav_drawer
+				NavContent:
+					id: content
+					screen_drawer: screen_draw
+					nav_drawer: nav_drawer
